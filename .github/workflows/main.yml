@@ -53,7 +53,12 @@ jobs:
           terraform init --reconfigure \
           --backend-config="bucket=bucket-tareas-ej3" \
           --backend-config="prefix=gke/state"
-          terraform destroy
+
+          terraform refresh
+          terraform state list
+
+          
+          terraform destroy --auto-approve
           #terraform validate
 
           #terraform plan
