@@ -51,8 +51,9 @@ jobs:
           prefix="gke/state"
           
           terraform init --reconfigure \
-          --backend-config bucket=$bucket_name \
-          --backend-config prefix=$prefix
+          --backend-config="bucket=bucket-tareas-ej3" \
+          --backend-config="prefix=gke/state" \
+          -force
           
           terraform validate
 
