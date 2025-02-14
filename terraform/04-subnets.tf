@@ -19,4 +19,7 @@ resource "google_compute_subnetwork" "private" {
     range_name    = "k8s-service-range"
     ip_cidr_range = "10.52.0.0/20"
   }
+  lifecycle {
+    ignore_changes = all
+  }
 }

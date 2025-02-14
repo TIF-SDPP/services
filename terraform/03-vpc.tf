@@ -11,4 +11,8 @@ resource "google_compute_network" "main" {
     google_project_service.compute,
     google_project_service.container
   ]
+
+  lifecycle {
+    ignore_changes = all
+  }
 }
