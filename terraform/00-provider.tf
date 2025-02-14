@@ -6,7 +6,7 @@ terraform {
       version = ">=5.26.0"
     }
   }
-  0backend "gcs" {
+  backend "gcs" {
   }
   required_version = ">= 1.7.5"
 }
