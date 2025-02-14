@@ -54,12 +54,12 @@ jobs:
           --backend-config bucket=$bucket_name \
           --backend-config prefix=$prefix
           
-          terraform validate
+          #terraform validate
 
-          terraform plan
+          #terraform plan
 
-          #terraform destroy --auto-approve
-          terraform apply --auto-approve
+          terraform destroy --auto-approve
+          #terraform apply --auto-approve
 
            
        
