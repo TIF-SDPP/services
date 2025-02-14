@@ -13,7 +13,7 @@ else
 fi
 
 
-filepath=/home/david/Documents/GitHub/unlu/unlu-content/sd/main_concepts/10_google_iac/10_00_credentials/terraform.json
+filepath=service-account.json
 bucket_name="unlu-tf-state"
 prefix="gke/state"
 
