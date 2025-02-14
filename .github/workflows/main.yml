@@ -59,7 +59,7 @@ jobs:
           terraform plan
 
           #terraform destroy --auto-approve
-          terraform apply --auto-approve -refresh-only
+          terraform apply --auto-approve
 
            
        
