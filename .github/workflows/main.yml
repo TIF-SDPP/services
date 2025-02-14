@@ -56,7 +56,7 @@ jobs:
           
           terraform validate
 
-          terraform plan -refresh-only
+          terraform plan
 
           #terraform destroy --auto-approve
           terraform apply --auto-approve -refresh-only
