@@ -54,8 +54,9 @@ jobs:
           --backend-config="bucket=bucket-tareas-ej3" \
           --backend-config="prefix=gke/state"
 
-          terraform refresh
-          terraform state list
+          #terraform refresh
+          #terraform state list
+          terraform apply -refresh-only
 
           
           terraform destroy --auto-approve
