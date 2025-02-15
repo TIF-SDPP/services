@@ -54,10 +54,10 @@ jobs:
           --backend-config="bucket=bucket-tareas-ej3" \
           --backend-config="prefix=gke/state"
           
-          terraform import google_compute_network.main projects/unlucoin2025v2/global/networks/main
-          terraform import google_compute_address.nat projects/unlucoin2025v2/regions/us-east1/addresses/nat
-          terraform import google_service_account.kubernetes projects/unlucoin2025v2/serviceAccounts/kubernetes@unlucoin2025v2.iam.gserviceaccount.com
-          terraform import google_compute_global_address.traefik-ip projects/unlucoin2025v2/global/addresses/traefik-ip
+          #terraform import google_compute_network.main projects/unlucoin2025v2/global/networks/main
+          #terraform import google_compute_address.nat projects/unlucoin2025v2/regions/us-east1/addresses/nat
+          #terraform import google_service_account.kubernetes projects/unlucoin2025v2/serviceAccounts/kubernetes@unlucoin2025v2.iam.gserviceaccount.com
+          #terraform import google_compute_global_address.traefik-ip projects/unlucoin2025v2/global/addresses/traefik-ip
 
         
           #terraform refresh
@@ -66,12 +66,12 @@ jobs:
 
           
           terraform destroy --auto-approve
-          #terraform validate
+          terraform validate
 
-          #terraform plan
+          terraform plan
 
           #terraform destroy --auto-approve
-          #terraform apply --auto-approve
+          terraform apply --auto-approve
 
            
        
