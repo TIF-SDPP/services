@@ -10,7 +10,7 @@ variable "zone" {
 
 variable "credentials_file_path" {
   description = "Path to GCP service account credentials file"
-  default     = "..service-account.json"
+  default     = "../service-account.json"
 }
 
 variable "project_id" {
