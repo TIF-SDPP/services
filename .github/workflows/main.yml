@@ -65,13 +65,13 @@ jobs:
           #terraform apply -refresh-only
 
           
-          terraform destroy --auto-approve
-          terraform validate
-
-          terraform plan
-
           #terraform destroy --auto-approve
-          terraform apply --auto-approve
+          #terraform validate
+
+          #terraform plan
+
+          terraform destroy --auto-approve
+          #terraform apply --auto-approve
 
            
        
