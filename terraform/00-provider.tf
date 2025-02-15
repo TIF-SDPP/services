@@ -9,6 +9,10 @@ terraform {
   }
   #backend "gcs" {
   #}
+  backend "gcs" {
+    bucket = "bucket-tareas-ej3"
+    prefix = "gke/state"
+  }
 
   #required_version = ">= 1.7.5"
 }
