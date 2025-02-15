@@ -7,14 +7,11 @@ terraform {
     }
 
   }
-  #backend "gcs" {
-  #}
-  backend "gcs" {
-    bucket = "unlu2025"
-    prefix = "gke/state"
-  }
 
-  #required_version = ">= 1.7.5"
+  backend "gcs" {
+  }
+  
+  required_version = ">= 1.7.5"
 }
 
 provider "google" {

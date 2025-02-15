@@ -47,31 +47,19 @@ jobs:
         run: |
 
           ls -lah
-          bucket_name="unlu2025"
+          bucket_name="sdfinal_bucket"
           prefix="gke/state"
           
           terraform init -reconfigure \
-          --backend-config="bucket=unlu2025" \
-          --backend-config="prefix=gke/state"
+          --backend-config="bucket=$bucket_name" \
+          --backend-config="prefix=$prefix"
           
-          #terraform import google_compute_network.main projects/unlucoin2025v2/global/networks/main
-          #terraform import google_compute_address.nat projects/unlucoin2025v2/regions/us-east1/addresses/nat
-          #terraform import google_service_account.kubernetes projects/unlucoin2025v2/serviceAccounts/kubernetes@unlucoin2025v2.iam.gserviceaccount.com
-          #terraform import google_compute_global_address.traefik-ip projects/unlucoin2025v2/global/addresses/traefik-ip
-
-        
-          #terraform refresh
-          #terraform state list
-          #terraform apply -refresh-only
-
-          
-          #terraform destroy --auto-approve
           terraform validate
 
-          terraform plan -lock=false
+          terraform plan --var credentials_file_path = ${{ secrets.GCP_CREDENTIALS}} -lock=false
 
-          terraform apply -lock=false --auto-approve
-          terraform destroy -lock=false --auto-approve
+          terraform apply --var credentials_file_path = ${{ secrets.GCP_CREDENTIALS}} -lock=false --auto-approve
+          #terraform destroy -lock=false --auto-approve
            
        
         env:
