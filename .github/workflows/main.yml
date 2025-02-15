@@ -66,11 +66,11 @@ jobs:
 
           
           #terraform destroy --auto-approve
-          #terraform validate
+          terraform validate
 
-          #terraform plan -lock=false
+          terraform plan -lock=false
 
-          #terraform apply -lock=false --auto-approve
+          terraform apply -lock=false --auto-approve
           terraform destroy -lock=false --auto-approve
            
        
