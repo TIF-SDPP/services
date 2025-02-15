@@ -47,11 +47,11 @@ jobs:
         run: |
 
           ls -lah
-          bucket_name="bucket-tareas-ej3"
+          bucket_name="unlu2025"
           prefix="gke/state"
           
           terraform init -reconfigure \
-          --backend-config="bucket=bucket-tareas-ej3" \
+          --backend-config="bucket=unlu2025" \
           --backend-config="prefix=gke/state"
           
           #terraform import google_compute_network.main projects/unlucoin2025v2/global/networks/main

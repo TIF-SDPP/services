@@ -10,7 +10,7 @@ terraform {
   #backend "gcs" {
   #}
   backend "gcs" {
-    bucket = "bucket-tareas-ej3"
+    bucket = "unlu2025"
     prefix = "gke/state"
   }
 
