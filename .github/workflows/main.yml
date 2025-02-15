@@ -60,8 +60,8 @@ jobs:
           #terraform import google_compute_global_address.traefik-ip projects/unlucoin2025v2/global/addresses/traefik-ip
 
         
-          #terraform refresh
-          #terraform state list
+          terraform refresh
+          terraform state list
           #terraform apply -refresh-only
 
           
