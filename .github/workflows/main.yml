@@ -56,9 +56,9 @@ jobs:
           
           terraform validate
 
-          terraform plan --var credentials_file_path = ${{ secrets.GCP_CREDENTIALS}} -lock=false
+          terraform plan -lock=false
 
-          terraform apply --var credentials_file_path = ${{ secrets.GCP_CREDENTIALS}} -lock=false --auto-approve
+          terraform apply -lock=false --auto-approve
           #terraform destroy -lock=false --auto-approve
            
        
