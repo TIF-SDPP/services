@@ -31,3 +31,4 @@ services:
 networks:
   red_ej2:
     name: "red_ej2"
+    external: true
