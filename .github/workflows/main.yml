@@ -47,7 +47,7 @@ jobs:
         run: |
 
           ls -lah
-          bucket_name="sdfinal_bucket"
+          bucket_name="sdfinal_bucket2"
           prefix="gke/state"
           
           terraform init -reconfigure \
