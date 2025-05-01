@@ -53,5 +53,7 @@ resource "google_container_cluster" "primary" {
     }
   }
 
+  # Desactivamos deletion_protection:
+  deletion_protection = false
 
 }
