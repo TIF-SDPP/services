@@ -1,11 +1,11 @@
 variable "region" {
   type    = string
-  default = "us-east1b"
+  default = "us-east1-b"
 }
 
 variable "zone" {
   type    = string
-  default = "us-east1b"
+  default = "us-east1-b"
 }
 
 variable "credentials_file_path" {
