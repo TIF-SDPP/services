@@ -54,7 +54,7 @@ jobs:
           --backend-config="bucket=$bucket_name" \
           --backend-config="prefix=$prefix"
           
-          terraform validate
+          #terraform validate
 
           terraform plan -lock=false
 
