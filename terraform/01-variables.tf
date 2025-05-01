@@ -15,5 +15,5 @@ variable "credentials_file_path" {
 
 variable "project_id" {
   type    = string
-  default = "unlucoin2025-458500"
+  default = "unlucoin"
 }

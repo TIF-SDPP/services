@@ -47,7 +47,7 @@ jobs:
         run: |
 
           ls -lah
-          bucket_name="bucketunlucoin"
+          bucket_name="sdbucketucoin"
           prefix="gke/state"
           
           terraform init -reconfigure \
