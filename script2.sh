@@ -9,3 +9,4 @@ kubectl delete service service-poolmanager
 kubectl delete service service-rabbitmq
 kubectl delete service service-redis
 kubectl delete service service-worker
+kubectl delete service server-app
