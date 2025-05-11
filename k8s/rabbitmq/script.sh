@@ -9,4 +9,4 @@ kubectl apply -f ./headless-rabbitmq.yaml
 kubectl apply -f ./statefulset-rabbitmq.yaml
 
 # Aplicar el archivo de configuración de Kubernetes
-kubectl apply -f ./service-rabbitmq.yaml
+#kubectl apply -f ./service-rabbitmq.yaml
