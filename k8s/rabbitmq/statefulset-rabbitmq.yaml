@@ -63,7 +63,7 @@ kind: StatefulSet
 metadata:
   name: rabbitmq
 spec:
-  serviceName: rabbitmq
+  serviceName: service-rabbitmq
   replicas: 2
   selector:
     matchLabels:
@@ -89,7 +89,7 @@ spec:
           args:
             - |
               HOSTNAME=$(hostname)
-              NODE_NAME="rabbit@${HOSTNAME}.rabbitmq.default.svc.cluster.local"
+              NODE_NAME="rabbit@${HOSTNAME}.service-rabbitmq.default.svc.cluster.local"
               export RABBITMQ_NODENAME=$NODE_NAME
               
               if [ "$HOSTNAME" = "rabbitmq-0" ]; then
@@ -103,14 +103,21 @@ spec:
                 sleep 10
 
                 rabbitmqctl stop_app
-                rabbitmqctl join_cluster rabbit@rabbitmq-0.rabbitmq.default.svc.cluster.local
+                rabbitmqctl join_cluster rabbit@rabbitmq-0.service-rabbitmq.default.svc.cluster.local
                 rabbitmqctl start_app
 
                 echo "Setting HA policy to replicate all queues"
                 rabbitmqctl set_policy ha-all "^" '{"ha-mode":"all"}' --priority 1 --apply-to queues
 
-                tail -f /var/log/rabbitmq/*  # Keeps the container running
+                tail -f /dev/null
               fi
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"
           ports:
             - containerPort: 5672
             - containerPort: 15672
