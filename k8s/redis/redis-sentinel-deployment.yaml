@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-sentinel
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: redis-sentinel
+  template:
+    metadata:
+      labels:
+        app: redis-sentinel
+    spec:
+      containers:
+        - name: sentinel
+          image: redis:7-alpine
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              cp /etc/sentinel/sentinel.conf /data/sentinel.conf && \
+              redis-server /data/sentinel.conf --sentinel
+          ports:
+            - containerPort: 26379
+          volumeMounts:
+            - name: sentinel-config
+              mountPath: /etc/sentinel
+            - name: sentinel-data
+              mountPath: /data
+      volumes:
+        - name: sentinel-config
+          configMap:
+            name: redis-sentinel-config
+        - name: sentinel-data
+          emptyDir: {}

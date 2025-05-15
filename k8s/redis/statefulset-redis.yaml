@@ -34,13 +34,58 @@
 #         requests:
 #           storage: 1Gi
 
+# apiVersion: apps/v1
+# kind: StatefulSet
+# metadata:
+#   name: redis
+# spec:
+#   serviceName: service-redis
+#   replicas: 2  # Aumenta según quieras más réplicas
+#   selector:
+#     matchLabels:
+#       app: redis
+#   template:
+#     metadata:
+#       labels:
+#         app: redis
+#     spec:
+#       containers:
+#         - name: redis
+#           image: redis:alpine
+#           command: ["/bin/sh", "-c"]
+#           args:
+#             - |
+#               if [ "$(hostname)" = "redis-0" ]; then
+#                 echo "Starting as master"
+#                 redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+#               else
+#                 echo "Starting as replica of redis-0"
+#                 redis-server --save 20 1 --loglevel warning \
+#                   --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81 \
+#                   --masterauth eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81 \
+#                   --replicaof redis-0.service-redis.default.svc.cluster.local 6379
+#               fi
+#           ports:
+#             - containerPort: 6379
+#           volumeMounts:
+#             - name: redis-storage
+#               mountPath: /data
+#   volumeClaimTemplates:
+#     - metadata:
+#         name: redis-storage
+#       spec:
+#         accessModes: ["ReadWriteOnce"]
+#         resources:
+#           requests:
+#             storage: 1Gi
+
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: redis
 spec:
   serviceName: service-redis
-  replicas: 2  # Aumenta según quieras más réplicas
+  replicas: 3
   selector:
     matchLabels:
       app: redis
@@ -78,3 +123,4 @@ spec:
         resources:
           requests:
             storage: 1Gi
+
