@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-redis-sentinel
+  labels:
+    app: redis-sentinel
+spec:
+  clusterIP: None   # Headless service para StatefulSet
+  selector:
+    app: redis-sentinel
+  ports:
+  - port: 26379
+    name: sentinel

@@ -1,0 +1,141 @@
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: redis-sentinel
+# spec:
+#   replicas: 3
+#   selector:
+#     matchLabels:
+#       app: redis-sentinel
+#   template:
+#     metadata:
+#       labels:
+#         app: redis-sentinel
+#     spec:
+#       containers:
+#         - name: sentinel
+#           image: redis:7-alpine
+#           command: ["/bin/sh", "-c"]
+#           args:
+#             - |
+#               cp /etc/sentinel/sentinel.conf /data/sentinel.conf && \
+#               redis-server /data/sentinel.conf --sentinel
+#           ports:
+#             - containerPort: 26379
+#           volumeMounts:
+#             - name: sentinel-config
+#               mountPath: /etc/sentinel
+#             - name: sentinel-data
+#               mountPath: /data
+#       volumes:
+#         - name: sentinel-config
+#           configMap:
+#             name: redis-sentinel-config
+#         - name: sentinel-data
+#           emptyDir: {}
+#       dnsPolicy: ClusterFirst
+
+
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: redis-sentinel
+# spec:
+#   replicas: 3
+#   selector:
+#     matchLabels:
+#       app: redis-sentinel
+#   template:
+#     metadata:
+#       labels:
+#         app: redis-sentinel
+#     spec:
+#       dnsPolicy: ClusterFirst
+#       initContainers:
+#       - name: wait-for-redis
+#         image: debian:bullseye-slim
+#         command:
+#           - sh
+#           - -c
+#           - |
+#             echo "Esperando que redis-0.service-redis.default.svc.cluster.local sea resolvible..."
+#             until getent hosts redis-0.service-redis.default.svc.cluster.local; do
+#               echo "No resuelve aún. Esperando..."
+#               sleep 2
+#             done
+#             echo "DNS resuelve correctamente."
+#       containers:
+#       - name: sentinel
+#         image: redis:7-bookworm
+#         securityContext:
+#           runAsUser: 0
+#         command: ["/bin/sh", "-c"]
+#         args:
+#           - |
+#             echo "Esperando 10 segundos para asegurar DNS..."
+#             sleep 10
+
+#             echo "Probando resolución de DNS antes de iniciar Redis..."
+#             until getent hosts redis-0.service-redis.default.svc.cluster.local; do
+#               echo "No resuelve aún. Esperando..."
+#               sleep 2
+#             done
+
+#             echo "DNS resuelto. Iniciando Redis Sentinel..."
+#             cp /etc/sentinel/sentinel.conf /data/sentinel.conf
+
+#             echo "Contenido de /etc/resolv.conf:"
+#             cat /etc/resolv.conf
+
+#             redis-server /data/sentinel.conf --sentinel
+#         ports:
+#           - containerPort: 26379
+#         volumeMounts:
+#           - name: sentinel-config
+#             mountPath: /etc/sentinel
+#           - name: sentinel-data
+#             mountPath: /data
+#       volumes:
+#         - name: sentinel-config
+#           configMap:
+#             name: redis-sentinel-config
+#         - name: sentinel-data
+#           emptyDir: {}
+
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis-sentinel
+spec:
+  serviceName: service-redis-sentinel
+  replicas: 3
+  selector:
+    matchLabels:
+      app: redis-sentinel
+  template:
+    metadata:
+      labels:
+        app: redis-sentinel
+    spec:
+      containers:
+      - name: sentinel
+        image: redis:7-alpine
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            cp /etc/sentinel/sentinel.conf /data/sentinel.conf && \
+            redis-server /data/sentinel.conf --sentinel
+        ports:
+        - containerPort: 26379
+        volumeMounts:
+        - name: sentinel-config
+          mountPath: /etc/sentinel
+        - name: sentinel-data
+          mountPath: /data
+      volumes:
+      - name: sentinel-config
+        configMap:
+          name: redis-sentinel-config
+      - name: sentinel-data
+        emptyDir: {}

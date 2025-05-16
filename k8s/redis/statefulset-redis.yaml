@@ -79,6 +79,51 @@
 #           requests:
 #             storage: 1Gi
 
+# apiVersion: apps/v1
+# kind: StatefulSet
+# metadata:
+#   name: redis
+# spec:
+#   serviceName: service-redis
+#   replicas: 3
+#   selector:
+#     matchLabels:
+#       app: redis
+#   template:
+#     metadata:
+#       labels:
+#         app: redis
+#     spec:
+#       containers:
+#         - name: redis
+#           image: redis:alpine
+#           command: ["/bin/sh", "-c"]
+#           args:
+#             - |
+#               if [ "$(hostname)" = "redis-0" ]; then
+#                 echo "Starting as master"
+#                 redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+#               else
+#                 echo "Starting as replica of redis-0"
+#                 redis-server --save 20 1 --loglevel warning \
+#                   --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81 \
+#                   --masterauth eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81 \
+#                   --replicaof redis-0.service-redis.default.svc.cluster.local 6379
+#               fi
+#           ports:
+#             - containerPort: 6379
+#           volumeMounts:
+#             - name: redis-storage
+#               mountPath: /data
+#   volumeClaimTemplates:
+#     - metadata:
+#         name: redis-storage
+#       spec:
+#         accessModes: ["ReadWriteOnce"]
+#         resources:
+#           requests:
+#             storage: 1Gi
+
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -94,33 +139,75 @@ spec:
       labels:
         app: redis
     spec:
-      containers:
-        - name: redis
-          image: redis:alpine
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              if [ "$(hostname)" = "redis-0" ]; then
-                echo "Starting as master"
-                redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
-              else
-                echo "Starting as replica of redis-0"
-                redis-server --save 20 1 --loglevel warning \
-                  --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81 \
-                  --masterauth eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81 \
-                  --replicaof redis-0.service-redis.default.svc.cluster.local 6379
+      initContainers:
+      - name: config
+        image: redis:7.0.10-alpine
+        command: ["sh", "-c"]
+        args:
+          - |
+            cp /tmp/redis/redis.conf /etc/redis/redis.conf
+
+            REDIS_PASS="eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81"
+            SENTINEL_HOST="service-redis-sentinel.default.svc.cluster.local"
+            SENTINEL_PORT=26379
+            MASTER_NAME="mymaster"
+
+            echo "Esperando a Sentinel..."
+            for i in $(seq 1 10); do
+              if redis-cli -a $REDIS_PASS -h $SENTINEL_HOST -p $SENTINEL_PORT ping | grep -q PONG; then
+                break
               fi
-          ports:
-            - containerPort: 6379
-          volumeMounts:
-            - name: redis-storage
-              mountPath: /data
+              echo "Esperando ($i)..."
+              sleep 2
+            done
+
+            MASTER_IP=$(redis-cli -a $REDIS_PASS -h $SENTINEL_HOST -p $SENTINEL_PORT sentinel get-master-addr-by-name $MASTER_NAME | sed -n '1p')
+
+            if [ -z "$MASTER_IP" ]; then
+              echo "No se encontró master. Asumimos redis-0."
+              if [ "$(hostname)" != "redis-0" ]; then
+                echo "replicaof redis-0.service-redis.default.svc.cluster.local 6379" >> /etc/redis/redis.conf
+              fi
+            else
+              echo "Master es: $MASTER_IP"
+              if [ "$(hostname -i)" != "$MASTER_IP" ]; then
+                echo "replicaof $MASTER_IP 6379" >> /etc/redis/redis.conf
+              fi
+            fi
+
+            echo "masterauth $REDIS_PASS" >> /etc/redis/redis.conf
+            echo "requirepass $REDIS_PASS" >> /etc/redis/redis.conf
+        volumeMounts:
+        - name: redis-config
+          mountPath: /etc/redis/
+        - name: config
+          mountPath: /tmp/redis/
+      containers:
+      - name: redis
+        image: redis:7.0.10-alpine
+        command: ["redis-server", "/etc/redis/redis.conf"]
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+        - name: data
+          mountPath: /data
+        - name: redis-config
+          mountPath: /etc/redis/
+      volumes:
+      - name: redis-config
+        emptyDir: {}
+      - name: config
+        configMap:
+          name: redis-config
   volumeClaimTemplates:
-    - metadata:
-        name: redis-storage
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        resources:
-          requests:
-            storage: 1Gi
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 100Mi
+
+
+
 
